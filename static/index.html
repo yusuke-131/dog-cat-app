@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head prefix="og: https://ogp.me/ns#">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="コメント">
+    <title>犬・猫 画像分類アプリ</title>
+    
+    <!-- web font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- css -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- favicon-->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="images/android-chrome-256x256.png">
+
+    <!-- ogp -->
+    <meta property="og:url" content=" ページのURL ※絶対パスで記述">
+    <meta property="og:type" content=" ページの種類 => website">
+    <meta property="og:title" content=" ページのタイトル => titleの内容と合わせる">
+    <meta property="og:description" content=" ページの説明文  => descriptionと合わせる">
+    <meta property="og:site_name" content="サイト名">
+    <meta property="og:image" content=" サムネイル画像のURL  ※絶対パスで記述">
+
+</head>
+<body>
+  <div class="container">
+    
+    <!-- 画像分類 -->
+    <div class="box">
+      <h2>犬・猫 画像分類アプリ</h2>
+      <form id="image-form">
+        <label for="image-file" class="file-label">画像を選択</label>
+        <input type="file" id="image-file" accept="image/*" required>
+        <button type="submit">画像を分類</button>
+      </form>
+
+      <div class="result-wrapper">
+      <img id="image-display" class="result-img" src="" alt="">
+      <canvas id="result-chart" width="400" height="400"></canvas>
+      </div>
+
+      <div id="image-result" class="result-text"></div>
+
+      <div class="sample-gallery">
+        <h3>サンプル画像</h3>
+        <div class="sample-thumbnails">
+          <img src="/static/samples/Abyssinian_10.jpg" alt="cat1" onclick="useSampleImage('Abyssinian_10.jpg')">
+          <img src="/static/samples/Abyssinian_136.jpg" alt="cat2" onclick="useSampleImage('Abyssinian_136.jpg')">
+          <img src="/static/samples/great_pyrenees_152.jpg" alt="dog1" onclick="useSampleImage('great_pyrenees_152.jpg')">
+          <img src="/static/samples/shiba_inu_139.jpg" alt="dog2" onclick="useSampleImage('shiba_inu_139.jpg')">
+        </div>
+      </div>
+    </div>
+    <div class="history-box">
+      <h3>分類履歴</h3>
+      <div id="history"></div>
+      <div class="rireki">
+        <button onclick="clearHistory()">履歴削除</button>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/script.js"></script>
+</body>
+</html>

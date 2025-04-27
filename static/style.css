@@ -1,0 +1,225 @@
+@charset "UTF-8";
+
+/* ===== リセット・ベーススタイル ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Helvetica Neue', sans-serif;
+  background: linear-gradient(to right, #252525, #252525);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== 見出し ===== */
+
+h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+h3 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.sample-gallery h3 {
+  font-size: 1.5rem;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+/* ===== レイアウト ===== */
+
+#image-form {
+  margin-top: 40px;
+  padding: 30px 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 25px rgba(84, 84, 84, 0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#image-file {
+  margin-bottom: 15px;
+}
+
+.container {
+  display: flex;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem;
+  gap: 2rem; 
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.box {
+  background: #fff;
+  padding: 4rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.space {
+  width: 30px;
+  height: auto;
+}
+
+/* ===== 履歴表示 ===== */
+.history-box {
+  background: #fff;
+  width: 600px;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-height: 800px;
+  overflow-y: auto;
+}
+
+#history {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.rireki {
+  text-align: right;
+}
+
+/* ===== フォーム ===== */
+form {
+  margin-bottom: 3rem;
+}
+
+input[type="file"] {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* カスタムファイル選択ボタン */
+.file-label {
+  background: #1f4037;
+  background: linear-gradient(to right, #1f4037, #99f2c8);
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.file-label:hover {
+  opacity: 0.85;
+}
+
+#image-file {
+  display: none;
+}
+
+button {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.result-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px; 
+  margin-top: 1rem;
+  flex-wrap: wrap; 
+}
+
+/* ===== 結果画像・テキスト ===== */
+.result-img {
+  display: block;
+  max-width: 100%;
+  width: 400px;
+  height: 400px;          
+  object-fit: contain;    
+  border: 1px dashed #aaa;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+}
+
+.result-text {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  min-height: 2em;
+}
+
+#result-chart {
+  width: 400px;
+  height: 400px;
+  max-width: 100%;
+  object-fit: contain;
+  border: 1px dashed #aaa;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* ===== サンプル画像ギャラリー ===== */
+.sample-gallery {
+  margin-top: 2rem;
+}
+
+.sample-thumbnails img {
+  width: 150px;
+  height: 200px;
+  margin-right: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  transition: transform 0.2s;
+}
+
+.sample-thumbnails img:hover {
+  transform: scale(1.05);
+  border-color: #4285f4;
+}
+
+/* ===== チャートエリア ===== */
+canvas {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
