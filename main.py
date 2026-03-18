@@ -8,8 +8,16 @@ import shutil
 import os
 import uuid
 from api.image_classifier import classify_image
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],  # アクセスを許可するURLを指定
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 一時的な履歴保存
 classification_history = []
@@ -20,17 +28,19 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def classify_image_api(file: UploadFile = File(...)):
     upload_dir = "static/uploads"
     os.makedirs(upload_dir, exist_ok=True)
-    file_path = os.path.join(upload_dir, file.filename)
+    ext = os.path.splitext(file.filename)[1]
+    saved_filename = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(upload_dir, saved_filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     result = await classify_image(file_path)
-    result["image_path"] = f"/static/uploads/{file.filename}"
+    image_path = f"/static/uploads/{saved_filename}"
     return JSONResponse({
         "result": result["predicted_class"],
         "labels": result["labels"],
         "scores": result["scores"],
-        "image_path": f"/static/uploads/{file.filename}"
+        "image_path": image_path
     })
 
 class HistoryEntry(BaseModel):

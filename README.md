@@ -1,6 +1,6 @@
 # 犬・猫画像判定＆履歴表示アプリ
 
-## 📄 アプリ概要
+## アプリ概要
 このアプリは、アップロードされた犬・猫の画像を分類し、分類結果と棒グラフを表示するのと同じく分類履歴を表示できるWebアプリケーションです。  
 
 ---
@@ -21,7 +21,7 @@ pip install -r requirements.txt
 
 ### 3. APIサーバーの起動方法
 
-uvicorn api.main:app --reload
+uvicorn main:app --reload
 
 起動後、以下のURLでAPIにアクセスできます：
 

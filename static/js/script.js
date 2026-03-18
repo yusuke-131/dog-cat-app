@@ -1,32 +1,11 @@
-
-// 画像判定アプリ
-document.getElementById('image-form').addEventListener('submit', async function (event) {
-  event.preventDefault();
+document.getElementById("image-file").addEventListener("change", () => {
   clearImageResult();
-
-  const fileInput = document.getElementById('image-file');
-  const file = fileInput.files[0]; 
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const response = await fetch('http://127.0.0.1:8000/classify/image', {
-    method: 'POST',
-    body: formData
-  });
-
-  const data = await response.json();
-  document.getElementById('image-display').src = data.image_path;
-
-  const topIndex = data.scores.indexOf(Math.max(...data.scores));
-  const resultLabel = data.labels[topIndex];
-  const confidence = data.scores[topIndex];
-
-  document.getElementById('image-result').innerHTML = `分類結果は「<strong>${data.labels[topIndex]}</strong>」です`;
-
-  drawChart(data.labels, data.scores);
-
-  // 履歴保存処理を追加！
-  saveResultToServer(file.name, resultLabel, confidence);
+  const file = document.getElementById("image-file").files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById("image-display").src = e.target.result;
+    reader.readAsDataURL(file);
+  }
 });
 
 let chart = null;
@@ -66,51 +45,82 @@ function clearImageResult() {
 }
 
 // 通常の画像選択時
-document.getElementById("image-file").addEventListener("change", () => {
+document.getElementById("image-form").addEventListener("submit", async function (event) {
+  event.preventDefault();
   clearImageResult();
-  const file = document.getElementById("image-file").files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => document.getElementById("image-display").src = e.target.result;
-    reader.readAsDataURL(file);
+
+  const fileInput = document.getElementById('image-file');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("ファイルを選択してください");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch('/classify/image', {
+      method: 'POST',
+      body: formData
+    });
+    if (!response.ok) throw new Error("分類に失敗しました"); // ← レスポンスチェック
+
+    const data = await response.json();
+    document.getElementById('image-display').src = data.image_path;
+
+    const topIndex = data.scores.indexOf(Math.max(...data.scores));
+    const resultLabel = data.labels[topIndex];
+    const confidence = data.scores[topIndex];
+
+    document.getElementById('image-result').innerHTML =
+      `分類結果は「<strong>${resultLabel}</strong>」です`;
+
+    drawChart(data.labels, data.scores);
+
+    // awaitで待って、失敗したらエラー表示
+    await saveResultToServer(file.name, resultLabel, confidence);
+
+  } catch (err) {
+    // 画面にエラーを表示
+    document.getElementById('image-result').innerHTML =
+      `<span style="color:red;">エラー: ${err.message}</span>`;
+    console.error(err);
   }
 });
 
 // サンプル画像選択用
-function useSampleImage(fileName) {
+async function useSampleImage(fileName) {
   clearImageResult();
   const imagePath = `/static/samples/${fileName}`;
-  fetch(imagePath)
-    .then(res => res.blob())
-    .then(blob => {
-      const file = new File([blob], fileName, { type: blob.type });
-      const input = document.getElementById('image-file');
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      input.files = dataTransfer.files;
-      document.getElementById("image-display").src = imagePath;
-    });
+  try {
+    const res = await fetch(imagePath);
+    const blob = await res.blob();
+    const file = new File([blob], fileName, { type: blob.type });
+    const input = document.getElementById('image-file');
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    input.files = dataTransfer.files;
+    document.getElementById("image-display").src = imagePath;
+  } catch (err) {
+    console.error("サンプル画像読み込みエラー:", err);
+  }
 }
 
 // 分類結果をサーバーに保存
-function saveResultToServer(imageName, result, confidence) {
-  fetch("/save_history", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      image_name: imageName,
-      result: result,
-      confidence: confidence
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log("履歴保存完了:", data);
-    renderHistory(data); 
-  })
-  .catch(err => console.error("履歴保存エラー:", err));
+async function saveResultToServer(imageName, result, confidence) {
+  try {
+    const res = await fetch("/save_history", {
+      method : "POST",
+      headers : {"Content-Type" : "application/json"},
+      body : JSON.stringify({ image_name : imageName, result, confidence})
+    });
+    const data = await res.json();
+    console.log("履歴保存完了：", data);
+    renderHistory(data);
+  } catch (err) {
+    console.error("履歴保存エラー：", err);
+  }
 }
 
 // 履歴をHTMLに表示する
@@ -118,7 +128,7 @@ function renderHistory(historyData) {
   const historyDiv = document.getElementById("history");
   historyDiv.innerHTML = "";  
 
-  historyData.slice().reverse().forEach(entry => {
+  historyData.forEach(entry => {
     const item = document.createElement("div");
     item.innerHTML = `
       <div style="padding: 6px 0; border-bottom: 1px solid #ccc;">
@@ -131,21 +141,23 @@ function renderHistory(historyData) {
   });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  fetch("/get_history")
-    .then(res => res.json())
-    .then(data => {
-      renderHistory(data);
-    })
-    .catch(err => console.error("履歴取得エラー:", err));
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("/get_history");
+    const data = await res.json();
+    renderHistory(data);
+  } catch (err) {
+    console.error("履歴取得エラー:", err);
+  }
 });
 
-function clearHistory() {
-  fetch("/clear_history", { method: "POST" })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data.message);
-      renderHistory([]);  
-    })
-    .catch(err => console.error("履歴削除エラー:", err));
+async function clearHistory() {
+  try {
+    const res = await fetch("/clear_history", { method: "POST" });
+    const data = await res.json();
+    console.log(data.message);
+    renderHistory([]);
+  } catch (err) {
+    console.error("履歴削除エラー:", err);
+  }
 }
